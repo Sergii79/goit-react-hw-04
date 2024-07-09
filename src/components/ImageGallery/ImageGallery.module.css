@@ -1,11 +1,14 @@
 .gallery {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(
+    4,
+    1fr
+  ); /* Четыре столбца с равным распределением */
   gap: 15px;
   padding: 20px;
   list-style: none;
 }
 
 .galleryItem {
-  flex-basis: calc(33.333% - 30px);
+  width: 100%;
 }
