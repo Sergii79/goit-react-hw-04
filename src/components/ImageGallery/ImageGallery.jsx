@@ -1,9 +1,10 @@
 import css from "./ImageGallery.module.css";
 import ImageCard from "../ImageCard/ImageCard";
+import Loader from "../Loader/Loader";
 
 export default function ImageGallery({ images, isLoading }) {
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <Loader />;
   }
 
   if (images.length === 0) {

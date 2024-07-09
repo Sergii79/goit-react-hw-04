@@ -1,9 +1,6 @@
 .gallery {
   display: grid;
-  grid-template-columns: repeat(
-    4,
-    1fr
-  ); /* Четыре столбца с равным распределением */
+  grid-template-columns: repeat(4, 1fr);
   gap: 15px;
   padding: 20px;
   list-style: none;
