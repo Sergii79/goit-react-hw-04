@@ -1,36 +1,48 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
 
-const ArticleList = ({ items }) => (
-  <ul>
-    {items.map(({ objectID, url, title }) => (
-      <li key={objectID}>
-        <a href={url} target="_blank" rel="noreferrer noopener">
-          {title}
-        </a>
-      </li>
-    ))}
-  </ul>
-);
+import SearchBar from "../SearchBar/SearchBar";
+import ImageGallery from "../ImageGallery/ImageGallery";
 
 export default function App() {
-  const [articles, setArticles] = useState([]);
+  const [images, setImages] = useState([]);
+  const [query, setQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    async function fetchArticles() {
-      const response = await axios.get(
-        "https://hn.algolia.com/api/v1/search?query=react"
-      );
-      setArticles(response.data.hits);
+  const handleSearchSubmit = async (searchQuery) => {
+    if (searchQuery.trim() === "") {
+      toast.error("Please enter a search query!");
+      return;
     }
 
-    fetchArticles();
-  }, []);
+    setQuery(searchQuery);
+    setIsLoading(true);
+
+    try {
+      const response = await axios.get(
+        "https://api.unsplash.com/search/photos",
+        {
+          params: { query: searchQuery },
+          headers: {
+            Authorization: `Client-ID VL40HsYKV5bl89KXzYeIpRZOxqIWEDtvbAQygxQPQKg`,
+          },
+        }
+      );
+
+      setImages(response.data.results);
+    } catch (error) {
+      toast.error("Failed to fetch images. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div>
-      <h1>Latest articles</h1>
-      {articles.length > 0 && <ArticleList items={articles} />}
+      <Toaster />
+      <SearchBar onSubmit={handleSearchSubmit} />
+      <ImageGallery images={images} isLoading={isLoading} />
     </div>
   );
 }
