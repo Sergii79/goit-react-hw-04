@@ -12,7 +12,7 @@ export default function ImageModal({ isOpen, onClose, imageURL }) {
       overlayClassName={css.overlay}
     >
       <div className={css.content}>
-        <img src={imageURL} alt="Large Image" />
+        <img src={imageURL} alt="Large Image" className={css.image} />
       </div>
     </Modal>
   );
