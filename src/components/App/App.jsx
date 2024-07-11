@@ -7,6 +7,7 @@ import SearchBar from "../SearchBar/SearchBar";
 import ImageGallery from "../ImageGallery/ImageGallery";
 import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import LoadMoreBtn from "../LoadMoreBtn/LoadMoreBtn";
+import ImageModal from "../ImageModal/ImageModal";
 
 export default function App() {
   const [images, setImages] = useState([]);
@@ -14,6 +15,9 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [error, setError] = useState(null);
+  const [showBtn, setShowBtn] = useState(false);
+  const [modalIsOpen, setModalOpen] = useState(false);
+  const [largeImageURL, setLargeImageURL] = useState("");
 
   useEffect(() => {
     if (!query) return;
@@ -36,6 +40,9 @@ export default function App() {
         } else {
           setImages((prevImages) => [...prevImages, ...response.data.results]);
         }
+        setShowBtn(
+          response.data.total_pages && response.data.total_pages !== page
+        );
       } catch (error) {
         setError("Failed to fetch images. Please try again.");
         toast.error("Failed to fetch images. Please try again.");
@@ -54,12 +61,22 @@ export default function App() {
     }
 
     setQuery(searchQuery);
-    setPage(1); // Reset page to 1 on new search
-    setImages([]); // Clear previous images on new search
+    setPage(1);
+    setImages([]);
   };
 
   const handleLoadMore = () => {
     setPage((prevPage) => prevPage + 1);
+  };
+
+  const openModal = (largeImageURL) => {
+    setLargeImageURL(largeImageURL);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setLargeImageURL("");
   };
 
   return (
@@ -70,12 +87,21 @@ export default function App() {
         <ErrorMessage message={error} />
       ) : (
         <>
-          <ImageGallery images={images} isLoading={isLoading} />
-          {images.length > 0 && !isLoading && (
+          <ImageGallery
+            images={images}
+            isLoading={isLoading}
+            onImageClick={openModal}
+          />
+          {images.length > 0 && !isLoading && showBtn && (
             <LoadMoreBtn onClick={handleLoadMore} />
           )}
         </>
       )}
+      <ImageModal
+        isOpen={modalIsOpen}
+        onClose={closeModal}
+        imageURL={largeImageURL}
+      />
     </div>
   );
 }
